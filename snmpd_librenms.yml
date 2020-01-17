@@ -1,0 +1,24 @@
+---
+- hosts: netflow02
+  remote_user: fakrul
+  become: yes
+  become_method: sudo
+  gather_facts: yes
+  vars:
+
+  tasks:
+
+  - name: install snmp packages
+    apt: name=snmpd state=latest
+
+  - name: enable snmp service
+    service: name=snmpd enabled=yes
+    notify: restart snmpd
+
+  - name: template snmpd.conf
+    copy: src=snmpd.conf dest=/etc/snmp/snmpd.conf owner=root group=root mode=644
+    notify: restart snmpd
+
+  handlers:
+    - name: restart snmpd
+      action: service name=snmpd state=restarted
